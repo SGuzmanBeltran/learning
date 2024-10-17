@@ -13,8 +13,7 @@ import (
 type CustomPartitioner struct{}
 
 func (p CustomPartitioner) Balance(msg kafka.Message, partitions ...int) int {
-	key := string(msg.Key)
-	if partition, ok := StockPartitions[key]; ok {
+	if partition, ok := StockPartitions[string(msg.Key)]; ok {
 		return partition
 	}
 	// Default to the first partition if the key is not in our map
