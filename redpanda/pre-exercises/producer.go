@@ -1,4 +1,4 @@
-package exercise1
+package preexercises
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 func Produce() {
 	// Kafka broker address and topic
 	brokerAddress := "localhost:9092" // Update with your Redpanda broker address
-	topic := "fun-messages"
+	topic := "test"
 
 	// Create a new writer (producer)
 	writer := kafka.NewWriter(kafka.WriterConfig{
@@ -28,20 +28,10 @@ func Produce() {
 		}
 	}()
 
-	jokes := [5]string{
-		"Why did the scarecrow win an award? Because he was outstanding in his field!",
-		"Why don’t skeletons fight each other? They don’t have the guts!",
-		"What do you call fake spaghetti? An impasta!",
-		"Why did the bicycle fall over? Because it was two-tired!",
-		"What did one wall say to the other wall? I’ll meet you at the corner!",
-	}
-
 	log.Println("Producer - Connected")
 
-	time.Sleep(5 * time.Second) // Adjust as necessary
-	// Send messages
-	for i, joke := range jokes {
-		message := fmt.Sprintf("Message - %s", joke)
+	for i := 1; i <= 5; i++ {
+		message := fmt.Sprintf("Message %d", i)
 		err := writer.WriteMessages(context.Background(),
 			kafka.Message{
 				Key:   []byte(fmt.Sprintf("Key-%d", i)),

@@ -1,4 +1,4 @@
-package exercise1
+package preexercises
 
 import (
 	"context"
@@ -10,16 +10,16 @@ import (
 
 func Consume() {
 	brokerAddress := "localhost:9092" // Update with your Redpanda broker address
-	topic := "fun-messages"
+	topic := "test"
 	groupID := "my-consumer-group"
 
 	// Create a new reader with the topic and the broker address
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:  []string{brokerAddress},
-		Topic:    topic,
+		Brokers:     []string{brokerAddress},
+		Topic:       topic,
 		GroupID:  groupID, // Set the GroupID here
-		MinBytes: 10e3,    // 10KB
-		MaxBytes: 1e6,     // 1MB
+		MinBytes:    10e3, // 10KB
+		MaxBytes:    1e6,  // 1MB
 	})
 
 	log.Println("Consumer - Connected")
