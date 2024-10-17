@@ -1,9 +1,9 @@
 package main
 
 import (
-	"learn/redpanda/exercise2"
+	"learn/redpanda/exercise3"
 )
 
 func main() {
-    exercise2.Run()
+	exercise3.Run()
 }
