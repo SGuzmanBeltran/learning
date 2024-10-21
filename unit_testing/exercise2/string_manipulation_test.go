@@ -61,3 +61,11 @@ func TestStringManipulation_RemoveSpaces(t *testing.T) {
 		})
 	}
 }
+
+//Benchmark example
+func BenchmarkRemoveSpaces(b *testing.B) {
+    sm := &StringManipulation{}
+    for i := 0; i < b.N; i++ {
+        sm.RemoveSpaces("GO is a interesting language")
+    }
+}
