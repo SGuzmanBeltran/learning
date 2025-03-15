@@ -1,0 +1,41 @@
+<html>
+
+<body>
+  <h1>SSE Messages</h1>
+  <div id="result"></div>
+
+  <script>
+    if (typeof (EventSource) !== "undefined") {
+      var source = new EventSource("http://127.0.0.1:3000/sse");
+
+      source.onopen = function (event) {
+        console.log("Connection opened");
+      };
+
+      // Listen for the specific event type
+      source.addEventListener("json_event", function (event) {
+        // Parse the JSON data
+        const data = JSON.parse(event.data);
+        console.log("Event received:", data);
+
+        // Display the data in the DOM
+        document.getElementById("result").innerHTML += `
+          <div>
+            <strong>Event ID:</strong> ${data.id}<br>
+            <strong>Time:</strong> ${data.time}<br>
+            <strong>Message:</strong> ${data.message}<br><br>
+          </div>`;
+      });
+
+      source.onerror = function (event) {
+        console.error("Error:", event);
+      };
+    } else {
+      document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
+    }
+  </script>
+
+
+</body>
+
+</html>

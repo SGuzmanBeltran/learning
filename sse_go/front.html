@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SSE Messages</title>
+</head>
+<body>
+    <h1>SSE Messages</h1>
+    <div id="status">Connecting...</div>
+    <div id="result"></div>
+
+    <script>
+        const connectSSE = () => {
+            if (typeof(EventSource) === "undefined") {
+                document.getElementById("status").innerHTML = 
+                    "Sorry, your browser does not support server-sent events...";
+                return;
+            }
+
+            const source = new EventSource("http://127.0.0.1:3000/sse");
+
+            source.onopen = (event) => {
+                console.log("Connection opened");
+                document.getElementById("status").innerHTML = "Connected";
+            };
+
+            // Listen for the connection established event
+            source.addEventListener("connected", (event) => {
+                console.log("Server connection established:", event.data);
+            });
+
+            // Listen for json_event
+            source.addEventListener("json_event", (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log("Event received:", data);
+
+                    document.getElementById("result").innerHTML += `
+                        <div style="margin: 10px; padding: 10px; border: 1px solid #ccc;">
+                            <strong>Event ID:</strong> ${data.id}<br>
+                            <strong>Time:</strong> ${data.time}<br>
+                            <strong>Message:</strong> ${data.message}<br>
+                        </div>`;
+                } catch (error) {
+                    console.error("Error parsing event data:", error);
+                }
+            });
+
+            source.addEventListener("products-update", (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log("Event received:", data);
+
+                    document.getElementById("result").innerHTML += `
+                        <div style="margin: 10px; padding: 10px; border: 1px solid #ccc;">
+                            <strong>Event ID:</strong> ${data.id}<br>
+                            <strong>Time:</strong> ${data.time}<br>
+                            <strong>Message:</strong> ${data.message}<br>
+                        </div>`;
+                } catch (error) {
+                    console.error("Error parsing event data:", error);
+                }
+            });
+
+            source.onerror = (event) => {
+                console.error("SSE Error:", event);
+                document.getElementById("status").innerHTML = "Connection lost. Reconnecting...";
+            };
+
+            // Clean up on page unload
+            window.addEventListener('beforeunload', () => {
+                source.close();
+            });
+        };
+
+        // Start the connection
+        connectSSE();
+    </script>
+</body>
+</html>
