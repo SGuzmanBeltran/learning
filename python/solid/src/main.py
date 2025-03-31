@@ -1,4 +1,4 @@
-from solid.src.refactorable_code import NotificationService, OnlineStore
+from solid.src.refactorable_code import Database, NotificationService, OnlineStore
 from solid.src.repositories.product_repository import ProductRepository
 from solid.src.services.product_service import ProductService
 
@@ -8,9 +8,10 @@ if __name__ == "__main__":
 
     store = OnlineStore()
 
+    database = Database()
     notification_service = NotificationService()
 
-    product_repository = ProductRepository()
+    product_repository = ProductRepository(database)
     product_service = ProductService(product_repository, notification_service)
     # Add products
     product_service.add_product(

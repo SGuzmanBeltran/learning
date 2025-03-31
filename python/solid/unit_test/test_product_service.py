@@ -1,24 +1,7 @@
-from solid.src.models.product import Product
+from solid.src.refactorable_code import Database
+from solid.src.repositories.product_repository import ProductRepository
 from solid.src.services.product_service import ProductService
 import pytest  # type: ignore
-
-
-class FakeProductRepository:
-    def __init__(self):
-        self.products = []
-
-    def add_product(self, product: Product) -> bool:
-        self.products.append(product)
-        return True
-
-    def update_product(self, product_id: str, new_quantity: int) -> Product | None:
-        product = next((p for p in self.products if p.id == product_id), None)
-        if product:
-            product.stock_quantity = new_quantity
-        return product
-
-    def get_product_details(self, product_id: str) -> Product | None:
-        return next((p for p in self.products if p.id == product_id), None)
 
 
 class FakeNotificationService:
@@ -37,7 +20,7 @@ class FakeNotificationService:
 
 @pytest.fixture
 def fake_product_repository():
-    return FakeProductRepository()
+    return ProductRepository(Database())
 
 
 @pytest.fixture

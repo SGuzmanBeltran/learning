@@ -3,9 +3,9 @@ from solid.src.refactorable_code import Database
 
 
 class ProductRepository:
-    def __init__(self):
+    def __init__(self, database: Database):
         self.products: list[Product] = []
-        self.db = Database()
+        self.db = database
 
     def add_product(self, product: Product) -> bool:
         self.products.append(product)
