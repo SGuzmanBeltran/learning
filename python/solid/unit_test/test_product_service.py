@@ -22,10 +22,16 @@ class FakeProductRepository:
 
 
 class FakeNotificationService:
+    def __init__(self):
+        self.send_email_count = 0
+        self.send_sms_count = 0
+
     def send_email(self, to: str, subject: str, body: str) -> bool:
+        self.send_email_count += 1
         return True
 
     def send_sms(self, to: str, message: str) -> bool:
+        self.send_sms_count += 1
         return True
 
 
@@ -56,6 +62,18 @@ def test_update_product_stock(fake_product_repository, fake_notification_service
     updated_product = product_service.update_product_stock(2, 100)
     assert product_service.product_repository.products[0].stock_quantity == 50
     assert updated_product is None
+
+
+def test_update_product_notification(
+    fake_product_repository, fake_notification_service
+):
+    product_service = ProductService(fake_product_repository, fake_notification_service)
+    product_service.add_product(
+        1, "Test Product", 10, "Test Category", "Test Description", 100
+    )
+    product_service.update_product_stock(1, 5)
+    assert fake_notification_service.send_email_count == 1
+    assert fake_notification_service.send_sms_count == 0
 
 
 def test_get_product_details(fake_product_repository):
