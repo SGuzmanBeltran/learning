@@ -1,44 +1,19 @@
 # A badly designed e-commerce system with multiple SOLID violations
 
 
+from solid.models.product import Product
+from solid.services.notification_service import NotificationService
+
+
 class OnlineStore:
     def __init__(self):
-        self.products = []
-        self.users = []
-        self.orders = []
+        self.users: list = []
+        self.orders: list = []
         self.payment_processor = PaymentProcessor()
         self.notification_service = NotificationService()
         self.db = Database()
 
     # Product Management
-    def add_product(self, id, name, price, category, description, stock_quantity):
-        product = {
-            "id": id,
-            "name": name,
-            "price": price,
-            "category": category,
-            "description": description,
-            "stock_quantity": stock_quantity,
-        }
-        self.products.append(product)
-        self.db.save_product(product)
-        print(f"Product {name} added to inventory.")
-
-    def update_product_stock(self, product_id, new_quantity):
-        product = next((p for p in self.products if p["id"] == product_id), None)
-        if product:
-            product["stock_quantity"] = new_quantity
-            self.db.update_product(product)
-            print(f"Product {product['name']} stock updated to {new_quantity}.")
-
-            # Send notification if stock is low
-            if new_quantity < 10:
-                self.notification_service.send_email(
-                    "admin@store.com",
-                    f"Low stock alert for {product['name']}",
-                    f"The stock for {product['name']} is low ({new_quantity} remaining).",
-                )
-
     def get_product_details(self, product_id):
         return next((p for p in self.products if p["id"] == product_id), None)
 
@@ -224,28 +199,14 @@ class PaymentProcessor:
             return {"success": False, "error": "Unsupported payment method"}
 
 
-class NotificationService:
-    def send_email(self, to, subject, body):
-        print(f"Sending email to {to}")
-        print(f"Subject: {subject}")
-        print(f"Body: {body}")
-        # In a real implementation, this would connect to an email service
-        return True
-
-    def send_sms(self, to, message):
-        print(f"Sending SMS to {to}: {message}")
-        # In a real implementation, this would connect to an SMS service
-        return True
-
-
 class Database:
-    def save_product(self, product):
-        print(f"Saving product to database: {product['name']}")
+    def save_product(self, product: Product) -> bool:
+        print(f"Saving product to database: {product.name}")
         # In a real implementation, this would save to a database
         return True
 
-    def update_product(self, product):
-        print(f"Updating product in database: {product['name']}")
+    def update_product(self, product: Product) -> bool:
+        print(f"Updating product in database: {product.name}")
         # In a real implementation, this would update a database record
         return True
 
@@ -265,43 +226,3 @@ class Database:
         )
         # In a real implementation, this would save to a database
         return True
-
-
-# Example usage
-if __name__ == "__main__":
-    import datetime
-
-    store = OnlineStore()
-
-    # Add products
-    store.add_product(
-        1, "Laptop", 999.99, "Electronics", "Powerful laptop for developers", 20
-    )
-    store.add_product(
-        2, "Headphones", 149.99, "Electronics", "Noise-cancelling headphones", 30
-    )
-
-    # Register a user
-    store.register_user(
-        1,
-        "John Doe",
-        "john@example.com",
-        "password123",
-        {"street": "123 Main St", "city": "Anytown", "zip_code": "12345"},
-        {
-            "type": "credit_card",
-            "card_number": "1234567890123456",
-            "expiry_date": "12/24",
-            "cvv": "123",
-        },
-    )
-
-    # Create an order
-    store.create_order(
-        1, [{"product_id": 1, "quantity": 1}, {"product_id": 2, "quantity": 2}]
-    )
-
-    # Generate a sales report
-    start_date = datetime.datetime(2023, 1, 1)
-    end_date = datetime.datetime(2023, 12, 31)
-    store.generate_sales_report(start_date, end_date)

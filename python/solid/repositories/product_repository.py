@@ -1,0 +1,23 @@
+from solid.models.product import Product
+from solid.refactorable_code import Database
+
+
+class ProductRepository:
+    def __init__(self):
+        self.products: list[Product] = []
+        self.db = Database()
+
+    def add_product(self, product: Product) -> bool:
+        self.products.append(product)
+        return self.db.save_product(product)
+
+    def update_product(self, product_id: str, new_quantity: int) -> Product | None:
+        product = next((p for p in self.products if p.id == product_id), None)
+        if product:
+            product.stock_quantity = new_quantity
+            self.db.update_product(product)
+            print(f"Product {product.name} stock updated to {new_quantity}.")
+        return product
+
+    def get_product_details(self, product_id: str) -> Product | None:
+        return next((p for p in self.products if p.id == product_id), None)
