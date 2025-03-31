@@ -1,21 +1,11 @@
 from solid.src.refactorable_code import Database
 from solid.src.repositories.product_repository import ProductRepository
 from solid.src.services.product_service import ProductService
-import pytest  # type: ignore
+import pytest
 
-
-class FakeNotificationService:
-    def __init__(self):
-        self.send_email_count = 0
-        self.send_sms_count = 0
-
-    def send_email(self, to: str, subject: str, body: str) -> bool:
-        self.send_email_count += 1
-        return True
-
-    def send_sms(self, to: str, message: str) -> bool:
-        self.send_sms_count += 1
-        return True
+from solid.tests.unit_test.fakes.fake_notification_service import (
+    FakeNotificationService,
+)  # type: ignore
 
 
 @pytest.fixture
