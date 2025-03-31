@@ -1,6 +1,9 @@
-from solid.src.refactorable_code import Database, NotificationService, OnlineStore
+from solid.src.database import Database
+from solid.src.refactorable_code import NotificationService, OnlineStore
 from solid.src.repositories.product_repository import ProductRepository
+from solid.src.repositories.user_repository import UserRepository
 from solid.src.services.product_service import ProductService
+from solid.src.services.user_service import UserService
 
 
 if __name__ == "__main__":
@@ -21,8 +24,10 @@ if __name__ == "__main__":
         2, "Headphones", 149.99, "Electronics", "Noise-cancelling headphones", 30
     )
 
+    user_repository = UserRepository(database)
+    user_service = UserService(user_repository, notification_service)
     # Register a user
-    store.register_user(
+    user_service.register_user(
         1,
         "John Doe",
         "john@example.com",

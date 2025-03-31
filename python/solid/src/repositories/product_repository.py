@@ -1,5 +1,5 @@
+from solid.src.database import Database
 from solid.src.models.product import Product
-from solid.src.refactorable_code import Database
 
 
 class ProductRepository:

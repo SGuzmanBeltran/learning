@@ -1,49 +1,16 @@
 # A badly designed e-commerce system with multiple SOLID violations
 
 
-from solid.src.models.product import Product
+from solid.src.database import Database
 from solid.src.services.notification_service import NotificationService
 
 
 class OnlineStore:
     def __init__(self):
-        self.users: list = []
         self.orders: list = []
         self.payment_processor = PaymentProcessor()
         self.notification_service = NotificationService()
         self.db = Database()
-
-    # Product Management
-    def get_product_details(self, product_id):
-        return next((p for p in self.products if p["id"] == product_id), None)
-
-    # User Management
-    def register_user(self, id, name, email, password, address, payment_info):
-        # Hash the password (very insecure way)
-        hashed_password = password[::-1]
-
-        user = {
-            "id": id,
-            "name": name,
-            "email": email,
-            "password": hashed_password,
-            "address": address,
-            "payment_info": payment_info,
-            "is_admin": False,
-        }
-
-        self.users.append(user)
-        self.db.save_user(user)
-
-        # Send welcome email
-        self.notification_service.send_email(
-            email, "Welcome to our store!", f"Dear {name}, thank you for registering!"
-        )
-
-        print(f"User {name} registered successfully.")
-
-    def get_user_details(self, user_id):
-        return next((u for u in self.users if u["id"] == user_id), None)
 
     # Order Processing
     def create_order(self, user_id, items):
@@ -197,32 +164,3 @@ class PaymentProcessor:
             return {"success": True}
         else:
             return {"success": False, "error": "Unsupported payment method"}
-
-
-class Database:
-    def save_product(self, product: Product) -> bool:
-        print(f"Saving product to database: {product.name}")
-        # In a real implementation, this would save to a database
-        return True
-
-    def update_product(self, product: Product) -> bool:
-        print(f"Updating product in database: {product.name}")
-        # In a real implementation, this would update a database record
-        return True
-
-    def save_user(self, user):
-        print(f"Saving user to database: {user['name']}")
-        # In a real implementation, this would save to a database
-        return True
-
-    def save_order(self, order):
-        print(f"Saving order to database: {order['id']}")
-        # In a real implementation, this would save to a database
-        return True
-
-    def save_report(self, report):
-        print(
-            f"Saving report to database for period: {report['start_date'].strftime('%Y-%m-%d')} to {report['end_date'].strftime('%Y-%m-%d')}"
-        )
-        # In a real implementation, this would save to a database
-        return True
