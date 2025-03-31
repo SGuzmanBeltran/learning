@@ -1,8 +1,8 @@
 # A badly designed e-commerce system with multiple SOLID violations
 
 
-from solid.models.product import Product
-from solid.services.notification_service import NotificationService
+from solid.src.models.product import Product
+from solid.src.services.notification_service import NotificationService
 
 
 class OnlineStore:

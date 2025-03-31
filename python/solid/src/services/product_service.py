@@ -1,6 +1,6 @@
-from solid.models.product import Product
-from solid.refactorable_code import NotificationService
-from solid.repositories.product_repository import ProductRepository  # type: ignore
+from solid.src.models.product import Product
+from solid.src.refactorable_code import NotificationService
+from solid.src.repositories.product_repository import ProductRepository  # type: ignore
 
 
 class ProductService:
@@ -35,7 +35,7 @@ class ProductService:
         else:
             print(f"Failed to add product {name} to inventory.")
 
-    def update_product_stock(self, product_id: str, new_quantity: int) -> None:
+    def update_product_stock(self, product_id: int, new_quantity: int) -> None:
         updated_product = self.product_repository.update_product(
             product_id, new_quantity
         )
@@ -50,5 +50,5 @@ class ProductService:
         if not updated_product:
             print(f"Failed to update product {product_id} stock.")
 
-    def get_product_details(self, product_id: str) -> Product | None:
+    def get_product_details(self, product_id: int) -> Product | None:
         return self.product_repository.get_product_details(product_id)

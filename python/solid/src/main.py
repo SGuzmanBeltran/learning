@@ -1,6 +1,6 @@
-from solid.refactorable_code import NotificationService, OnlineStore
-from solid.repositories.product_repository import ProductRepository
-from solid.services.product_service import ProductService
+from solid.src.refactorable_code import NotificationService, OnlineStore
+from solid.src.repositories.product_repository import ProductRepository
+from solid.src.services.product_service import ProductService
 
 
 if __name__ == "__main__":
