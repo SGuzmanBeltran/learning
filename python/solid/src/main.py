@@ -1,7 +1,10 @@
 from solid.src.database import Database
 from solid.src.refactorable_code import NotificationService, OnlineStore
+from solid.src.repositories.order_repository import OrderRepository
 from solid.src.repositories.product_repository import ProductRepository
 from solid.src.repositories.user_repository import UserRepository
+from solid.src.services.order_service import OrderService
+from solid.src.services.payment_service import PaymentService
 from solid.src.services.product_service import ProductService
 from solid.src.services.user_service import UserService
 
@@ -41,12 +44,21 @@ if __name__ == "__main__":
         },
     )
 
+    order_repository = OrderRepository(database)
+    payment_service = PaymentService()
     # Create an order
-    store.create_order(
+    order_service = OrderService(
+        order_repository,
+        notification_service,
+        product_service,
+        user_service,
+        payment_service,
+    )
+    order_service.create_order(
         1, [{"product_id": 1, "quantity": 1}, {"product_id": 2, "quantity": 2}]
     )
 
     # Generate a sales report
-    start_date = datetime.datetime(2023, 1, 1)
-    end_date = datetime.datetime(2023, 12, 31)
-    store.generate_sales_report(start_date, end_date)
+    # start_date = datetime.datetime(2023, 1, 1)
+    # end_date = datetime.datetime(2023, 12, 31)
+    # store.generate_sales_report(start_date, end_date)

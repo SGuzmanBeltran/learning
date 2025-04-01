@@ -1,3 +1,4 @@
+from solid.src.models.order import Order
 from solid.src.models.product import Product
 from solid.src.models.user import User
 
@@ -18,8 +19,8 @@ class Database:
         # In a real implementation, this would save to a database
         return True
 
-    def save_order(self, order):
-        print(f"Saving order to database: {order['id']}")
+    def save_order(self, order: Order) -> bool:
+        print(f"Saving order to database: {order.id}")
         # In a real implementation, this would save to a database
         return True
 
