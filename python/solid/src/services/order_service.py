@@ -1,4 +1,4 @@
-from solid.src.models.order import Order
+from solid.src.models.order import Order, OrderItem
 from solid.src.models.product import Product
 from solid.src.repositories.order_repository import OrderRepository
 from solid.src.services.notification_service import NotificationService
@@ -24,11 +24,11 @@ class OrderService:
         self.user_service = user_service
         self.payment_service = payment_service
 
-    def create_order(self, user_id, items):
+    def create_order(self, user_id: int, items: list[dict]) -> Order | None:
         user = self.user_service.get_user_details(user_id)
         if not user:
             print("User not found.")
-            return
+            return None
 
         total_amount, order_items = self.calculate_order_total(items)
 
@@ -71,9 +71,9 @@ class OrderService:
             print(f"Payment failed: {payment_result['error']}")
             return None
 
-    def calculate_order_total(self, items: list[dict]) -> tuple[float, list[dict]]:
+    def calculate_order_total(self, items: list[dict]) -> tuple[float, list[OrderItem]]:
         total_amount = 0
-        order_items: list[dict] = []
+        order_items: list[OrderItem] = []
         # Calculate order total and create order items
         for item in items:
             product = self.product_service.get_product_details(item["product_id"])
@@ -91,14 +91,18 @@ class OrderService:
         return total_amount, order_items
 
     def add_order_item(
-        self, order_items: list[dict], product: Product, item: dict, item_total: float
+        self,
+        order_items: list[OrderItem],
+        product: Product,
+        item: dict,
+        item_total: float,
     ) -> None:
         order_items.append(
-            {
-                "product": product,
-                "quantity": item["quantity"],
-                "item_total": item_total,
-            }
+            OrderItem(
+                product=product,
+                quantity=item["quantity"],
+                price=item_total,
+            )
         )
 
         # Update stock

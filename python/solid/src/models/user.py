@@ -1,3 +1,9 @@
+class PaymentInfo:
+    def __init__(self, type: str, card_number: str):
+        self.type = type
+        self.card_number = card_number
+
+
 class User:
     def __init__(
         self,
@@ -6,7 +12,7 @@ class User:
         email: str,
         password: str,
         address: dict,
-        payment_info: dict,
+        payment_info: PaymentInfo,
         is_admin: bool = False,
     ):
         self.id = id

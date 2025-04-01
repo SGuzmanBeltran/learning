@@ -1,11 +1,14 @@
+from solid.src.models.user import PaymentInfo
+
+
 class PaymentService:
-    def process_payment(self, payment_info, amount):
-        print(f"Processing payment of ${amount:.2f} using {payment_info['type']}...")
+    def process_payment(self, payment_info: PaymentInfo, amount: float):
+        print(f"Processing payment of ${amount:.2f} using {payment_info.type}...")
 
         # Simulate payment processing
-        if payment_info["type"] == "credit_card":
+        if payment_info.type == "credit_card":
             # Validate credit card (very basic validation)
-            if len(payment_info["card_number"]) != 16:
+            if len(payment_info.card_number) != 16:
                 return {"success": False, "error": "Invalid card number"}
 
             # Connect to payment gateway (simulated)
@@ -14,7 +17,7 @@ class PaymentService:
 
             # Mock successful response
             return {"success": True}
-        elif payment_info["type"] == "paypal":
+        elif payment_info.type == "paypal":
             # Connect to PayPal API (simulated)
             print("Connecting to PayPal API...")
             # Process payment logic would go here

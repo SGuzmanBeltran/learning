@@ -1,5 +1,25 @@
+import datetime
+from solid.src.models.product import Product
+
+
+class OrderItem:
+    def __init__(self, product: Product, quantity: int, price: float):
+        self.product = product
+        self.quantity = quantity
+        self.price = price
+
+
 class Order:
-    def __init__(self, id, user_id, items, total_amount, tax, status, created_at):
+    def __init__(
+        self,
+        id: str,
+        user_id: int,
+        items: list[OrderItem],
+        total_amount: float,
+        tax: float,
+        status: str,
+        created_at: datetime.datetime,
+    ):
         self.id = id
         self.user_id = user_id
         self.items = items
