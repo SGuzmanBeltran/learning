@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+	"strconv"
 	"testing"
 )
 
@@ -11,6 +13,12 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
+		{
+			name:    "discard 0",
+			input:   0,
+			want:    "0",
+			wantErr: true,
+		},
 		{
 			name:    "convert 1 to 1",
 			input:   1,
@@ -28,6 +36,52 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 			want:    "4",
 			wantErr: false,
 		},
+		{
+			name:    "convert 3 to Fizz",
+			input:   3,
+			want:    "Fizz",
+			wantErr: false,
+		},
+		{
+			name:    "convert 6 to Fizz",
+			input:   6,
+			want:    "Fizz",
+			wantErr: false,
+		}, {
+			name:    "convert 9 to Fizz",
+			input:   9,
+			want:    "Fizz",
+			wantErr: false,
+		},
+		{
+			name:    "convert 5 to Buzz",
+			input:   5,
+			want:    "Buzz",
+			wantErr: false,
+		},
+		{
+			name:    "convert 10 to Buzz",
+			input:   10,
+			want:    "Buzz",
+			wantErr: false,
+		}, {
+			name:    "convert 15 to FizzBuzz",
+			input:   15,
+			want:    "FizzBuzz",
+			wantErr: false,
+		},
+		{
+			name:    "convert 20 to Buzz",
+			input:   20,
+			want:    "Buzz",
+			wantErr: false,
+		},
+	{
+		name:    "accept max int64",
+		input:   math.MaxInt64,
+		want:    strconv.Itoa(math.MaxInt64),
+		wantErr: false,
+	},
 	}
 
 	for _, tt := range tests {
@@ -45,16 +99,5 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 			}
 		})
 	}
-}
 
-func TestConvert3ToFizz(t *testing.T) {
-	want := "Fizz"
-	given := 3
-
-	fizz := &FizzBuzz{}
-	got, err := fizz.Convert(given)
-
-	if want != got || err != nil {
-		t.Errorf("Convert() = %v, want %v", got, want)
-	}
 }
