@@ -46,3 +46,15 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 		})
 	}
 }
+
+func TestConvert3ToFizz(t *testing.T) {
+	want := "Fizz"
+	given := 3
+
+	fizz := &FizzBuzz{}
+	got, err := fizz.Convert(given)
+
+	if want != got || err != nil {
+		t.Errorf("Convert() = %v, want %v", got, want)
+	}
+}

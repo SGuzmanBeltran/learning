@@ -4,10 +4,13 @@ import (
 	"strconv"
 )
 
-// TODO: We're currently starting the FOURTH CYCLE of https://www.codurance.com/katas/fizzbuzz
+// TODO: We're currently implementing the last logic
+// https://www.codurance.com/katas/fizzbuzz
 type FizzBuzz struct{}
 
 func (fb *FizzBuzz) Convert(number int) (string, error) {
+	if number == 3 {
+		return "Fizz", nil
+	}
 	return strconv.Itoa(number), nil
-	// return 0, fmt.Errorf("implement me!")
 }
