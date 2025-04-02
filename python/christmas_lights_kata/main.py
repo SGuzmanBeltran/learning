@@ -4,12 +4,19 @@
 class Light:
     def __init__(self):
         self.is_on = False
+        self.brightness = 0
 
     def turn(self, on: bool):
         self.is_on = on
 
     def toggle(self):
         self.is_on = not self.is_on
+
+    def increase_brightness(self, brightness: int):
+        self.brightness += brightness
+
+    def decrease_brightness(self, brightness: int):
+        self.brightness = max(0, self.brightness - (-1 * brightness))
 
 
 class Instruction:
@@ -21,6 +28,16 @@ class Instruction:
         self.instruction = instruction
         self.start = start
         self.end = end
+        self.brightness = self.set_brightness()
+
+    def set_brightness(self):
+        if self.instruction == Instruction.TURN_ON:
+            return 1
+        elif self.instruction == Instruction.TURN_OFF:
+            return -1
+        elif self.instruction == Instruction.TOGGLE:
+            return 2
+        return 0
 
 
 lights: list[list[Light]] = []
@@ -47,24 +64,29 @@ instructions: list[Instruction] = [
     Instruction(Instruction.TOGGLE, (720, 196), (897, 994)),
     Instruction(Instruction.TOGGLE, (831, 394), (904, 860)),
 ]
-
 for intruction in instructions:
     x_quantity = intruction.end[0] - intruction.start[0] + 1
     y_quantity = intruction.end[1] - intruction.start[1] + 1
 
     for x in range(x_quantity):
         for y in range(y_quantity):
+            light = lights[intruction.start[0] + x][intruction.start[1] + y]
             if intruction.instruction == Instruction.TURN_ON:
-                lights[intruction.start[0] + x][intruction.start[1] + y].turn(True)
+                light.turn(True)
+                light.increase_brightness(intruction.brightness)
             elif intruction.instruction == Instruction.TURN_OFF:
-                lights[intruction.start[0] + x][intruction.start[1] + y].turn(False)
+                light.turn(False)
+                light.decrease_brightness(intruction.brightness)
             elif intruction.instruction == Instruction.TOGGLE:
-                lights[intruction.start[0] + x][intruction.start[1] + y].toggle()
+                light.toggle()
+                light.increase_brightness(intruction.brightness)
 
 lights_on = 0
-for light in lights:
-    for light_row in light:
-        if light_row.is_on:
+total_brightness = 0
+for light_row in lights:
+    for light in light_row:
+        if light.is_on:
             lights_on += 1
-
-print(lights_on)
+        total_brightness += light.brightness
+print("lights_on: ", lights_on)
+print("total_brightness: ", total_brightness)
