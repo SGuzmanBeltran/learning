@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 )
 
 // TODO: We're currently implementing the last logic
@@ -18,15 +19,29 @@ func (fb *FizzBuzz) Convert(number int) (string, error) {
 		return "0", fmt.Errorf("number must be lower than {%v}", number)
 	}
 	result := strconv.Itoa(number)
+	fizz := ""
+	containsFive := strings.Contains(result, "5")
+	containsThree := strings.Contains(result, "3")
+	if containsThree {
+		fizz += "Fizz"
+	}
 	isMultipleThree := number % 3 == 0
 	isMultipleFive := number % 5 == 0
 	isMultipleBoth := isMultipleThree && isMultipleFive
 	if isMultipleBoth {
-		result = "FizzBuzz"
+		fizz += "FizzBuzz"
 	} else if isMultipleFive {
-		result = "Buzz"
+		fizz += "Buzz"
 	} else if isMultipleThree {
-		result = "Fizz"
+		fizz += "Fizz"
+	}
+
+	if containsFive {
+		fizz += "Buzz"
+	}
+
+	if len(fizz) > 0 {
+		return fizz, nil
 	}
 	return result, nil
 }

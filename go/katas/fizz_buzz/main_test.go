@@ -2,7 +2,6 @@ package main
 
 import (
 	"math"
-	"strconv"
 	"testing"
 )
 
@@ -39,7 +38,7 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 		{
 			name:    "convert 3 to Fizz",
 			input:   3,
-			want:    "Fizz",
+			want:    "FizzFizz",
 			wantErr: false,
 		},
 		{
@@ -54,9 +53,9 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "convert 5 to Buzz",
+			name:    "convert 5 to BuzzBuzz",
 			input:   5,
-			want:    "Buzz",
+			want:    "BuzzBuzz",
 			wantErr: false,
 		},
 		{
@@ -65,9 +64,9 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 			want:    "Buzz",
 			wantErr: false,
 		}, {
-			name:    "convert 15 to FizzBuzz",
+			name:    "convert 15 to FizzBuzzBuzz",
 			input:   15,
-			want:    "FizzBuzz",
+			want:    "FizzBuzzBuzz",
 			wantErr: false,
 		},
 		{
@@ -76,12 +75,31 @@ func TestConvertNumberToFizzBuzzString(t *testing.T) {
 			want:    "Buzz",
 			wantErr: false,
 		},
-	{
-		name:    "accept max int64",
-		input:   math.MaxInt64,
-		want:    strconv.Itoa(math.MaxInt64),
-		wantErr: false,
-	},
+		{
+			name:    "convert 33 to FizzFizz",
+			input:   33,
+			want:    "FizzFizz",
+			wantErr: false,
+		},
+		{
+			name:    "convert 51 to FizzBuzz",
+			input:   51,
+			want:    "FizzBuzz",
+			wantErr: false,
+		},
+		{
+			name:    "convert 35 to FizzBuzzBuzz",
+			input:   35,
+			want:    "FizzBuzzBuzz",
+			wantErr: false,
+		},
+		{
+			name:    "accept max int64",
+			input:   math.MaxInt64,
+			want:    "FizzBuzz",
+			wantErr: false,
+		},
+
 	}
 
 	for _, tt := range tests {
