@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// TODO: We're currently implementing the last logic
 // https://www.codurance.com/katas/fizzbuzz
 type FizzBuzz struct{}
 
