@@ -1,12 +1,16 @@
 import * as schema from './schemas/schema';
 
-import { ConfigService } from '@nestjs/config';
-import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Global, Module } from '@nestjs/common';
+import { LibSQLDatabase, drizzle } from 'drizzle-orm/libsql';
+
 import { createClient } from '@libsql/client';
-import { drizzle } from 'drizzle-orm/libsql';
 
 export const DRIZZLE = Symbol('DRIZZLE');
+
+@Global()
 @Module({
+  imports: [ConfigModule],
   providers: [
     {
       provide: DRIZZLE,
@@ -16,7 +20,7 @@ export const DRIZZLE = Symbol('DRIZZLE');
         const client = createClient({
           url: `file:${dbName}`,
         });
-        return drizzle(client, { schema });
+        return drizzle(client, { schema }) as LibSQLDatabase<typeof schema>;
       },
     },
   ],

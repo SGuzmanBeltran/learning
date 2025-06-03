@@ -1,26 +1,92 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { LoginDto } from '@auth/dto/login.dto';
+import { RegisterDto } from '@auth/dto/register.dto';
+import { DRIZZLE } from '../drizzle/drizzle.module';
+import { users } from '../drizzle/schemas/users.schema';
+import { eq, or } from 'drizzle-orm';
+import { DrizzleDB } from '../drizzle/types/drizzle';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
+
+export interface LoginResponse {
+  message: string;
+  accessToken: string;
+}
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @Inject(DRIZZLE) private drizzle: DrizzleDB,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async register(registerDto: RegisterDto): Promise<{ message: string }> {
+    const { email, password, passwordConfirmation, username, cellphone } =
+      registerDto;
+
+    if (password !== passwordConfirmation) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
+    const user = await this.drizzle
+      .select()
+      .from(users)
+      .where(
+        or(
+          eq(users.email, email as string),
+          eq(users.username, username as string),
+        ),
+      )
+      .limit(1);
+
+    if (user) {
+      throw new BadRequestException('User already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await this.drizzle.insert(users).values({
+      email: email as string,
+      password: hashedPassword,
+      username: username as string,
+      cellphone: cellphone as string,
+    });
+
+    return {
+      message: 'User registered successfully',
+    };
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async login(loginDto: LoginDto): Promise<LoginResponse> {
+    const { email, password } = loginDto;
+    const [user] = await this.drizzle
+      .select()
+      .from(users)
+      .where(eq(users.email, email as string))
+      .limit(1);
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const accessToken = await this.jwtService.signAsync({
+      userId: user.id,
+      email: user.email,
+    });
+
+    return {
+      message: 'Login successful',
+      accessToken,
+    };
   }
 }
