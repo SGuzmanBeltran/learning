@@ -7,7 +7,8 @@ import { AuthService } from './auth.service';
 import { DRIZZLE } from '../drizzle/drizzle.module';
 import { DrizzleDB } from '../drizzle/types/drizzle';
 import { JwtService } from '@nestjs/jwt';
-import { users } from '@src/drizzle/schemas/users.schema';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 jest.mock('bcryptjs', () => ({
   hash: jest.fn().mockImplementation((password) => {
@@ -61,7 +62,7 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('should throw BadRequestException when passwords do not match', async () => {
-      const registerDto = {
+      const registerDto: RegisterDto = {
         email: 'test@example.com',
         password: 'password',
         passwordConfirmation: 'different',
@@ -114,7 +115,7 @@ describe('AuthService', () => {
     ])(
       'should throw BadRequestException when $scenario',
       async ({ registerTestDto, existingUser }) => {
-        const registerDto = {
+        const registerDto: RegisterDto = {
           email: registerTestDto.email,
           password: 'password',
           passwordConfirmation: 'password',
@@ -145,7 +146,7 @@ describe('AuthService', () => {
         }),
       });
 
-      const registerDto = {
+      const registerDto: RegisterDto = {
         email: 'test@example.com',
         password: 'password',
         passwordConfirmation: 'password',
@@ -158,7 +159,7 @@ describe('AuthService', () => {
     });
 
     it('should hash password', async () => {
-      const registerDto = {
+      const registerDto: RegisterDto = {
         email: 'test@example.com',
         password: 'password',
         passwordConfirmation: 'password',
@@ -201,7 +202,13 @@ describe('AuthService', () => {
       },
     ])(
       'should throw UnauthorizedException for $scenario',
-      async ({ loginTestDto, mockUser }) => {
+      async ({
+        loginTestDto,
+        mockUser,
+      }: {
+        loginTestDto: LoginDto;
+        mockUser: any;
+      }) => {
         (mockDrizzle.select as jest.Mock).mockReturnValueOnce({
           from: jest.fn().mockReturnValue({
             where: jest.fn().mockReturnValue({
@@ -231,7 +238,7 @@ describe('AuthService', () => {
         }),
       });
 
-      const loginDto = {
+      const loginDto: LoginDto = {
         email: 'test@example.com',
         password: 'Password',
       };
