@@ -33,15 +33,10 @@ export class AuthService {
       throw new BadRequestException('Passwords do not match');
     }
 
-    const user = await this.drizzle
+    const [user] = await this.drizzle
       .select()
       .from(users)
-      .where(
-        or(
-          eq(users.email, email as string),
-          eq(users.username, username as string),
-        ),
-      )
+      .where(or(eq(users.email, email), eq(users.username, username)))
       .limit(1);
 
     if (user) {
@@ -50,10 +45,10 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await this.drizzle.insert(users).values({
-      email: email as string,
+      email: email,
       password: hashedPassword,
-      username: username as string,
-      cellphone: cellphone as string,
+      username: username,
+      cellphone: cellphone,
     });
 
     return {
@@ -66,7 +61,7 @@ export class AuthService {
     const [user] = await this.drizzle
       .select()
       .from(users)
-      .where(eq(users.email, email as string))
+      .where(eq(users.email, email))
       .limit(1);
 
     if (!user) {

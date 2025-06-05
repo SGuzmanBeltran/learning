@@ -141,7 +141,7 @@ describe('AuthService', () => {
       (mockDrizzle.select as jest.Mock).mockReturnValueOnce({
         from: jest.fn().mockReturnValue({
           where: jest.fn().mockReturnValue({
-            limit: jest.fn().mockResolvedValue(null),
+            limit: jest.fn().mockResolvedValue([null]),
           }),
         }),
       });
@@ -159,6 +159,13 @@ describe('AuthService', () => {
     });
 
     it('should hash password', async () => {
+      (mockDrizzle.select as jest.Mock).mockReturnValueOnce({
+        from: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue([null]),
+          }),
+        }),
+      });
       const registerDto: RegisterDto = {
         email: 'test@example.com',
         password: 'password',
