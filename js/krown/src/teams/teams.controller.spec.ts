@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { DRIZZLE } from '../drizzle/drizzle.module';
 import { DrizzleDB } from '../drizzle/types/drizzle';
@@ -28,6 +29,7 @@ describe('TeamsController', () => {
         ConfigModule.forRoot({
           isGlobal: true,
         }),
+        AuthModule,
       ],
       controllers: [TeamsController],
       providers: [

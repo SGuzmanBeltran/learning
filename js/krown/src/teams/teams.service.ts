@@ -1,6 +1,5 @@
 import { eq } from 'drizzle-orm';
 import { CreateTeamDto } from './dto/create-team.dto';
-import { DrizzleDB } from '../drizzle/types/drizzle';
 import {
   ConflictException,
   Inject,
@@ -14,6 +13,7 @@ import {
   TeamMember,
   teamMembers,
 } from '../drizzle/schemas/team_members.schema';
+import { DrizzleDB } from '../drizzle/types/drizzle';
 
 @Injectable()
 export class TeamsService {
