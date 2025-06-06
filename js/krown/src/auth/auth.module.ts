@@ -1,15 +1,19 @@
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
 import { DrizzleModule } from 'drizzle/drizzle.module';
 import { JwtModule } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 
 @Module({
   imports: [
-    JwtModule.register({
+    JwtModule.registerAsync({
+      inject: [ConfigService],
       global: true,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
     }),
     DrizzleModule,
   ],
