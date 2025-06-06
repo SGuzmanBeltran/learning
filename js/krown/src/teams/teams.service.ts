@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
+import { Injectable } from '@nestjs/common';
 import { UpdateTeamDto } from './dto/update-team.dto';
 
 @Injectable()
@@ -22,5 +22,13 @@ export class TeamsService {
 
   remove(id: number) {
     return `This action removes a #${id} team`;
+  }
+
+  addMember(teamID: number) {
+    return `This action adds a member to a #${teamID} team`;
+  }
+
+  removeMember(teamID: number, userID: number) {
+    return `This action removes a member from a #${teamID} team`;
   }
 }
