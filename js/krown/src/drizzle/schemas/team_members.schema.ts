@@ -4,6 +4,8 @@ import { relations, sql } from 'drizzle-orm';
 import { teams } from './teams.schema';
 import { users } from './users.schema';
 
+export type TeamMember = typeof teamMembers.$inferSelect;
+
 export const teamMembers = sqliteTable(
   'team_members',
   {

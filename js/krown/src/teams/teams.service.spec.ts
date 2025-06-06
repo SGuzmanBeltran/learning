@@ -49,13 +49,21 @@ describe('TeamsService', () => {
         }),
       }),
     });
-    (mockDrizzle.insert as jest.Mock).mockReturnValueOnce({
-      values: jest.fn().mockReturnValue({
-        returning: jest.fn().mockResolvedValue([{ id: 1 }]),
-      }),
-    });
-    const teamId = await service.create({ name: 'Test Team' });
-    expect(teamId).toBe(1);
+    (mockDrizzle.insert as jest.Mock)
+      .mockReturnValueOnce({
+        values: jest.fn().mockReturnValue({
+          returning: jest.fn().mockResolvedValue([{ id: 1 }]),
+        }),
+      })
+      .mockReturnValueOnce({
+        values: jest.fn().mockReturnValue({
+          returning: jest
+            .fn()
+            .mockResolvedValue([{ teamId: 1, userId: 1, isLeader: true }]),
+        }),
+      });
+    const team = await service.create({ name: 'Test Team' }, 1);
+    expect(team).toEqual({ id: 1 });
   });
 
   it('should throw an error if the team name is already taken', async () => {
@@ -71,7 +79,7 @@ describe('TeamsService', () => {
         returning: jest.fn().mockResolvedValue([{ id: 1 }]),
       }),
     });
-    await expect(service.create({ name: 'Test Team' })).rejects.toThrow(
+    await expect(service.create({ name: 'Test Team' }, 1)).rejects.toThrow(
       ConflictException,
     );
   });

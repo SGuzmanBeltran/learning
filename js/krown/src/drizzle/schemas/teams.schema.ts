@@ -3,6 +3,8 @@ import { relations, sql } from 'drizzle-orm';
 
 import { teamMembers } from './team_members.schema';
 
+export type Team = typeof teams.$inferSelect;
+
 export const teams = sqliteTable('teams', {
   id: integer('id').primaryKey(),
   name: text('name').notNull(),
