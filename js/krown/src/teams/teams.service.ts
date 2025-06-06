@@ -30,26 +30,28 @@ export class TeamsService {
       throw new ConflictException('Team name already exists');
     }
 
-    const [team]: Team[] = await this.drizzle
-      .insert(teams)
-      .values({
-        name: createTeamDto.name,
-      })
-      .returning();
+    const team: Team = await this.drizzle.transaction(async (tx) => {
+      const [team]: Team[] = await tx
+        .insert(teams)
+        .values({
+          name: createTeamDto.name,
+        })
+        .returning();
 
-    const [teamMember]: TeamMember[] = await this.drizzle
-      .insert(teamMembers)
-      .values({
-        teamId: team.id,
-        userId: userID,
-        isLeader: true,
-      })
-      .returning();
+      const [teamMember]: TeamMember[] = await tx
+        .insert(teamMembers)
+        .values({
+          teamId: team.id,
+          userId: userID,
+          isLeader: true,
+        })
+        .returning();
 
-    if (!teamMember) {
-      throw new InternalServerErrorException('Failed to add team member');
-    }
-
+      if (!teamMember) {
+        throw new InternalServerErrorException('Failed to add team member');
+      }
+      return team;
+    });
     return team;
   }
 

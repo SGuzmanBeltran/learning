@@ -4,8 +4,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginDto } from '@auth/dto/login.dto';
-import { RegisterDto } from '@auth/dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { DRIZZLE } from '../drizzle/drizzle.module';
 import { users } from '../drizzle/schemas/users.schema';
 import { eq, or } from 'drizzle-orm';

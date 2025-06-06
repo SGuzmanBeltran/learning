@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ConfigModule } from '@nestjs/config';
 import { DRIZZLE } from '../drizzle/drizzle.module';
 import { DrizzleDB } from '../drizzle/types/drizzle';
 import { TeamsController } from './teams.controller';
@@ -23,6 +24,11 @@ describe('TeamsController', () => {
       }),
     };
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+      ],
       controllers: [TeamsController],
       providers: [
         TeamsService,

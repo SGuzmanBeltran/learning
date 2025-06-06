@@ -6,12 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { ApiCreatedResponse } from '@nestjs/swagger';
+import { Team } from '../drizzle/schemas/teams.schema';
+import { AuthGuard, AuthenticatedRequest } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('teams')
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
@@ -26,8 +31,11 @@ export class TeamsController {
     description: 'The team has been successfully created.',
     type: Number,
   })
-  async create(@Body() createTeamDto: CreateTeamDto): Promise<number> {
-    return await this.teamsService.create(createTeamDto);
+  async create(
+    @Body() createTeamDto: CreateTeamDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<Team> {
+    return await this.teamsService.create(createTeamDto, req.user!.userId);
   }
 
   @Get(':teamID')

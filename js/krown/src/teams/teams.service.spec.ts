@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ConfigModule } from '@nestjs/config';
 import { ConflictException } from '@nestjs/common';
 import { DRIZZLE } from '../drizzle/drizzle.module';
 import { DrizzleDB } from '../drizzle/types/drizzle';
@@ -25,6 +26,12 @@ describe('TeamsService', () => {
       }),
     };
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        AuthModule,
+      ],
       providers: [
         TeamsService,
         {
