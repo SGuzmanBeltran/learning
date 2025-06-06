@@ -31,7 +31,7 @@ export const setupMockDrizzle = (): Partial<DrizzleDB> => ({
     ),
 });
 
-export const setMockSelectLimit = (
+export const setMockSelect = (
   mockDrizzle: Partial<DrizzleDB>,
   returnValue: any,
 ) => {
@@ -39,6 +39,9 @@ export const setMockSelectLimit = (
     from: jest.fn().mockReturnValue({
       where: jest.fn().mockReturnValue({
         limit: jest.fn().mockResolvedValue(returnValue),
+      }),
+      innerJoin: jest.fn().mockReturnValue({
+        where: jest.fn().mockResolvedValue(returnValue),
       }),
     }),
   });

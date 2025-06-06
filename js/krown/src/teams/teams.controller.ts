@@ -22,8 +22,8 @@ export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
   @Get()
-  findAll() {
-    return this.teamsService.findAll();
+  findAll(@Req() req: AuthenticatedRequest) {
+    return this.teamsService.findAll(req.user!.userId);
   }
 
   @Post()

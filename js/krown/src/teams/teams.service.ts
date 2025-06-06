@@ -59,8 +59,14 @@ export class TeamsService {
     return team;
   }
 
-  findAll() {
-    return `This action returns all teams`;
+  async findAll(userId: number): Promise<Team[]> {
+    const userTeams = await this.drizzle
+      .select()
+      .from(teams)
+      .innerJoin(teamMembers, eq(teams.id, teamMembers.teamId))
+      .where(eq(teamMembers.userId, userId));
+
+    return userTeams.map((team) => team.teams);
   }
 
   findOne(id: number) {

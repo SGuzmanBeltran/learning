@@ -64,50 +64,66 @@ describe('TeamsService', () => {
     service = module.get<TeamsService>(TeamsService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  describe('create team', () => {
+    it('should be defined', () => {
+      expect(service).toBeDefined();
+    });
 
-  it('should create a team', async () => {
-    DrizzleSpec.setMockSelectLimit(mockDrizzle, [null]);
-    setCreateMockTransaction(mockDrizzle, [
-      { id: 1, name: 'Test Team' },
-      { teamId: 1, userId: 1, isLeader: true },
-    ]);
+    it('should create a team', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [null]);
+      setCreateMockTransaction(mockDrizzle, [
+        { id: 1, name: 'Test Team' },
+        { teamId: 1, userId: 1, isLeader: true },
+      ]);
 
-    const team = await service.create({ name: 'Test Team' }, 1);
-    expect(team).toEqual({ id: 1, name: 'Test Team' });
-    expect(mockDrizzle.transaction).toHaveBeenCalled();
-  });
+      const team = await service.create({ name: 'Test Team' }, 1);
+      expect(team).toEqual({ id: 1, name: 'Test Team' });
+      expect(mockDrizzle.transaction).toHaveBeenCalled();
+    });
 
-  it('should throw an error if the team name is already taken', async () => {
-    DrizzleSpec.setMockSelectLimit(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
+    it('should throw an error if the team name is already taken', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
 
-    await expect(service.create({ name: 'Test Team' }, 1)).rejects.toThrow(
-      ConflictException,
+      await expect(service.create({ name: 'Test Team' }, 1)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+
+    it.each([
+      {
+        scenario: 'team creation fails',
+        insertReturnValues: [null],
+      },
+      {
+        scenario: 'team member creation fails',
+        insertReturnValues: [null, null],
+      },
+    ])(
+      'should throw an error if the team creation fails with $scenario',
+      async ({ insertReturnValues }) => {
+        DrizzleSpec.setMockSelect(mockDrizzle, [null]);
+        setCreateMockTransaction(mockDrizzle, insertReturnValues);
+
+        await expect(service.create({ name: 'Test Team' }, 1)).rejects.toThrow(
+          InternalServerErrorException,
+        );
+
+        expect(mockDrizzle.transaction).toHaveBeenCalled();
+      },
     );
   });
 
-  it.each([
-    {
-      scenario: 'team creation fails',
-      insertReturnValues: [null],
-    },
-    {
-      scenario: 'team member creation fails',
-      insertReturnValues: [null, null],
-    },
-  ])(
-    'should throw an error if the team creation fails with $scenario',
-    async ({ insertReturnValues }) => {
-      DrizzleSpec.setMockSelectLimit(mockDrizzle, [null]);
-      setCreateMockTransaction(mockDrizzle, insertReturnValues);
+  describe('findAll teams', () => {
+    it('should find all teams', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [
+        {
+          teams: { id: 1, name: 'Test Team' },
+          teamMembers: { teamId: 1, userId: 1, isLeader: true },
+        },
+      ]);
 
-      await expect(service.create({ name: 'Test Team' }, 1)).rejects.toThrow(
-        InternalServerErrorException,
-      );
-
-      expect(mockDrizzle.transaction).toHaveBeenCalled();
-    },
-  );
+      const teams = await service.findAll(1);
+      expect(teams).toEqual([{ id: 1, name: 'Test Team' }]);
+    });
+  });
 });
