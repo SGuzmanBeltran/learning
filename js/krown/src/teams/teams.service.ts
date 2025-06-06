@@ -1,11 +1,33 @@
+import { eq } from 'drizzle-orm';
 import { CreateTeamDto } from './dto/create-team.dto';
-import { Injectable } from '@nestjs/common';
+import { DrizzleDB } from '../drizzle/types/drizzle';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { teams } from '../drizzle/schemas/teams.schema';
+import { DRIZZLE } from '../drizzle/drizzle.module';
 
 @Injectable()
 export class TeamsService {
-  create(createTeamDto: CreateTeamDto) {
-    return 'This action adds a new team';
+  constructor(@Inject(DRIZZLE) private drizzle: DrizzleDB) {}
+
+  async create(createTeamDto: CreateTeamDto): Promise<number> {
+    const [existingTeam] = await this.drizzle
+      .select()
+      .from(teams)
+      .where(eq(teams.name, createTeamDto.name))
+      .limit(1);
+
+    if (existingTeam) {
+      throw new ConflictException('Team name already exists');
+    }
+
+    const [team] = await this.drizzle
+      .insert(teams)
+      .values({
+        name: createTeamDto.name,
+      })
+      .returning();
+    return team.id;
   }
 
   findAll() {

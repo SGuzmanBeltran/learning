@@ -10,6 +10,7 @@ import {
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { ApiCreatedResponse } from '@nestjs/swagger';
 
 @Controller('teams')
 export class TeamsController {
@@ -21,8 +22,12 @@ export class TeamsController {
   }
 
   @Post()
-  create(@Body() createTeamDto: CreateTeamDto) {
-    return this.teamsService.create(createTeamDto);
+  @ApiCreatedResponse({
+    description: 'The team has been successfully created.',
+    type: Number,
+  })
+  async create(@Body() createTeamDto: CreateTeamDto): Promise<number> {
+    return await this.teamsService.create(createTeamDto);
   }
 
   @Get(':teamID')
