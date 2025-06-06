@@ -3,6 +3,7 @@ import * as DrizzleSpec from '../common/test/drizzle.mock';
 import {
   ConflictException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -124,6 +125,21 @@ describe('TeamsService', () => {
 
       const teams = await service.findAll(1);
       expect(teams).toEqual([{ id: 1, name: 'Test Team' }]);
+    });
+  });
+
+  describe('findOne team', () => {
+    it('should find a team', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
+
+      const team = await service.findOne(1);
+      expect(team).toEqual({ id: 1, name: 'Test Team' });
+    });
+
+    it('should throw an error if the team is not found', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [null]);
+
+      await expect(service.findOne(1)).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { Team, teams } from '../drizzle/schemas/teams.schema';
@@ -69,8 +70,18 @@ export class TeamsService {
     return userTeams.map((team) => team.teams);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} team`;
+  async findOne(id: number): Promise<Team> {
+    const [team] = await this.drizzle
+      .select()
+      .from(teams)
+      .where(eq(teams.id, id))
+      .limit(1);
+
+    if (!team) {
+      throw new NotFoundException(`Team with id ${id} not found`);
+    }
+
+    return team;
   }
 
   update(id: number, updateTeamDto: UpdateTeamDto) {
