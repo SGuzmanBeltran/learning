@@ -13,7 +13,7 @@ import {
   TeamMember,
   teamMembers,
 } from '../drizzle/schemas/team_members.schema';
-import { DrizzleDB } from '../drizzle/types/drizzle';
+import { DrizzleDB } from 'drizzle/types/drizzle';
 
 @Injectable()
 export class TeamsService {
@@ -37,6 +37,10 @@ export class TeamsService {
           name: createTeamDto.name,
         })
         .returning();
+
+      if (!team) {
+        throw new InternalServerErrorException('Failed to create team');
+      }
 
       const [teamMember]: TeamMember[] = await tx
         .insert(teamMembers)

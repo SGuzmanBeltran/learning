@@ -1,13 +1,17 @@
 import * as DrizzleSpec from '../common/test/drizzle.mock';
 
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { ConflictException } from '@nestjs/common';
 import { DRIZZLE } from '../drizzle/drizzle.module';
 import { DrizzleDB } from '../drizzle/types/drizzle';
 import { TeamsService } from './teams.service';
+import { teams } from '../drizzle/schemas/teams.schema';
 
 const setCreateMockTransaction = (
   mockDrizzle: Partial<DrizzleDB>,
@@ -83,4 +87,27 @@ describe('TeamsService', () => {
       ConflictException,
     );
   });
+
+  it.each([
+    {
+      scenario: 'team creation fails',
+      insertReturnValues: [null],
+    },
+    {
+      scenario: 'team member creation fails',
+      insertReturnValues: [null, null],
+    },
+  ])(
+    'should throw an error if the team creation fails with $scenario',
+    async ({ insertReturnValues }) => {
+      DrizzleSpec.setMockSelectLimit(mockDrizzle, [null]);
+      setCreateMockTransaction(mockDrizzle, insertReturnValues);
+
+      await expect(service.create({ name: 'Test Team' }, 1)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+
+      expect(mockDrizzle.transaction).toHaveBeenCalled();
+    },
+  );
 });
