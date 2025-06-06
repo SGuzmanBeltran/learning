@@ -76,10 +76,12 @@ describe('TeamsService', () => {
         { id: 1, name: 'Test Team' },
         { teamId: 1, userId: 1, isLeader: true },
       ]);
+      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
 
       const team = await service.create({ name: 'Test Team' }, 1);
       expect(team).toEqual({ id: 1, name: 'Test Team' });
       expect(mockDrizzle.transaction).toHaveBeenCalled();
+      expect(mockDrizzle.select).toHaveBeenCalledTimes(2);
     });
 
     it('should throw an error if the team name is already taken', async () => {
@@ -140,6 +142,28 @@ describe('TeamsService', () => {
       DrizzleSpec.setMockSelect(mockDrizzle, [null]);
 
       await expect(service.findOne(1)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('update team', () => {
+    it('should update a team', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Old Team' }]);
+      DrizzleSpec.setMockUpdate(mockDrizzle, [{ id: 1, name: 'Updated Team' }]);
+
+      const team = await service.update(1, { name: 'Updated Team' });
+      expect(team).toEqual({ id: 1, name: 'Updated Team' });
+      expect(mockDrizzle.update).toHaveBeenCalled();
+      expect(mockDrizzle.select).toHaveBeenCalled();
+    });
+
+    it('should throw an error if the team update fails', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Old Team' }]);
+
+      DrizzleSpec.setMockUpdateFails(mockDrizzle);
+
+      await expect(service.update(1, { name: 'Updated Team' })).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 });

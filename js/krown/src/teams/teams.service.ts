@@ -10,10 +10,7 @@ import {
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { Team, teams } from '../drizzle/schemas/teams.schema';
 import { DRIZZLE } from '../drizzle/drizzle.module';
-import {
-  TeamMember,
-  teamMembers,
-} from '../drizzle/schemas/team_members.schema';
+import { teamMembers } from '../drizzle/schemas/team_members.schema';
 import { DrizzleDB } from 'drizzle/types/drizzle';
 
 @Injectable()
@@ -31,11 +28,12 @@ export class TeamsService {
       throw new ConflictException('Team name already exists');
     }
 
-    const team: Team = await this.drizzle.transaction(async (tx) => {
+    const transactionTeam: Team = await this.drizzle.transaction(async (tx) => {
       const [team]: Team[] = await tx
         .insert(teams)
         .values({
           name: createTeamDto.name,
+          playersCount: 1,
         })
         .returning();
 
@@ -43,20 +41,25 @@ export class TeamsService {
         throw new InternalServerErrorException('Failed to create team');
       }
 
-      const [teamMember]: TeamMember[] = await tx
-        .insert(teamMembers)
-        .values({
+      try {
+        await tx.insert(teamMembers).values({
           teamId: team.id,
           userId: userID,
           isLeader: true,
-        })
-        .returning();
-
-      if (!teamMember) {
+        });
+      } catch {
         throw new InternalServerErrorException('Failed to add team member');
       }
+
       return team;
     });
+
+    const [team] = await this.drizzle
+      .select()
+      .from(teams)
+      .where(eq(teams.id, transactionTeam.id))
+      .limit(1);
+
     return team;
   }
 
@@ -84,8 +87,19 @@ export class TeamsService {
     return team;
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
-    return `This action updates a #${id} team`;
+  async update(id: number, updateTeamDto: UpdateTeamDto): Promise<Team> {
+    await this.findOne(id);
+    try {
+      const [updatedTeam] = await this.drizzle
+        .update(teams)
+        .set(updateTeamDto)
+        .where(eq(teams.id, id))
+        .returning();
+
+      return updatedTeam;
+    } catch {
+      throw new InternalServerErrorException('Failed to update team');
+    }
   }
 
   remove(id: number) {

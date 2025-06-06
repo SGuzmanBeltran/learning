@@ -29,6 +29,13 @@ export const setupMockDrizzle = (): Partial<DrizzleDB> => ({
         return await callback(tx);
       },
     ),
+  update: jest.fn().mockReturnValue({
+    set: jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        returning: jest.fn().mockResolvedValue([null]),
+      }),
+    }),
+  }),
 });
 
 export const setMockSelect = (
@@ -42,6 +49,31 @@ export const setMockSelect = (
       }),
       innerJoin: jest.fn().mockReturnValue({
         where: jest.fn().mockResolvedValue(returnValue),
+      }),
+    }),
+  });
+};
+
+export const setMockUpdate = (
+  mockDrizzle: Partial<DrizzleDB>,
+  returnValue: any,
+) => {
+  (mockDrizzle.update as jest.Mock).mockReturnValueOnce({
+    set: jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        returning: jest.fn().mockResolvedValue(returnValue),
+      }),
+    }),
+  });
+};
+
+export const setMockUpdateFails = (mockDrizzle: Partial<DrizzleDB>) => {
+  (mockDrizzle.update as jest.Mock).mockReturnValueOnce({
+    set: jest.fn().mockReturnValue({
+      where: jest.fn().mockReturnValue({
+        returning: jest
+          .fn()
+          .mockRejectedValue(new Error('Failed to update team')),
       }),
     }),
   });
