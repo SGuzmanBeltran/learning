@@ -12,7 +12,6 @@ import { ConfigModule } from '@nestjs/config';
 import { DRIZZLE } from '../drizzle/drizzle.module';
 import { DrizzleDB } from '../drizzle/types/drizzle';
 import { TeamsService } from './teams.service';
-import { teams } from '../drizzle/schemas/teams.schema';
 
 const setCreateMockTransaction = (
   mockDrizzle: Partial<DrizzleDB>,
@@ -164,6 +163,34 @@ describe('TeamsService', () => {
       await expect(service.update(1, { name: 'Updated Team' })).rejects.toThrow(
         InternalServerErrorException,
       );
+    });
+  });
+
+  describe('remove team', () => {
+    it('should remove a team', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
+      DrizzleSpec.setMockDelete(mockDrizzle);
+
+      const result = await service.remove(1);
+
+      expect(result).toEqual({
+        message: 'Team 1 deleted successfully',
+        deleted: true,
+      });
+      expect(mockDrizzle.delete).toHaveBeenCalled();
+      expect(mockDrizzle.select).toHaveBeenCalled();
+    });
+
+    it('should throw an error if the team deletion fails', async () => {
+      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
+      DrizzleSpec.setMockDeleteFails(mockDrizzle);
+
+      await expect(service.remove(1)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+
+      expect(mockDrizzle.delete).toHaveBeenCalled();
+      expect(mockDrizzle.select).toHaveBeenCalled();
     });
   });
 });

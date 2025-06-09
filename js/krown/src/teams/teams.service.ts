@@ -102,15 +102,23 @@ export class TeamsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} team`;
+  async remove(id: number): Promise<{ message: string; deleted: boolean }> {
+    await this.findOne(id);
+
+    try {
+      await this.drizzle.delete(teams).where(eq(teams.id, id));
+    } catch {
+      throw new InternalServerErrorException('Failed to delete team');
+    }
+
+    return { message: `Team ${id} deleted successfully`, deleted: true };
   }
 
-  addMember(teamID: number) {
+  async addMember(teamID: number) {
     return `This action adds a member to a #${teamID} team`;
   }
 
-  removeMember(teamID: number, userID: number) {
+  async removeMember(teamID: number, userID: number) {
     return `This action removes a member from a #${teamID} team`;
   }
 }

@@ -36,6 +36,9 @@ export const setupMockDrizzle = (): Partial<DrizzleDB> => ({
       }),
     }),
   }),
+  delete: jest.fn().mockReturnValue({
+    where: jest.fn().mockResolvedValue(null),
+  }),
 });
 
 export const setMockSelect = (
@@ -76,5 +79,17 @@ export const setMockUpdateFails = (mockDrizzle: Partial<DrizzleDB>) => {
           .mockRejectedValue(new Error('Failed to update team')),
       }),
     }),
+  });
+};
+
+export const setMockDelete = (mockDrizzle: Partial<DrizzleDB>) => {
+  (mockDrizzle.delete as jest.Mock).mockReturnValueOnce({
+    where: jest.fn().mockResolvedValue(null),
+  });
+};
+
+export const setMockDeleteFails = (mockDrizzle: Partial<DrizzleDB>) => {
+  (mockDrizzle.delete as jest.Mock).mockReturnValueOnce({
+    where: jest.fn().mockRejectedValue(new Error('Failed to delete team')),
   });
 };

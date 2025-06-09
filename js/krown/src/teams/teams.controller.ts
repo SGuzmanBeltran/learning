@@ -39,33 +39,36 @@ export class TeamsController {
   }
 
   @Get(':teamID')
-  findOne(@Param('teamID') teamID: string) {
-    return this.teamsService.findOne(+teamID);
+  async findOne(@Param('teamID') teamID: string) {
+    return await this.teamsService.findOne(+teamID);
   }
 
   @Patch(':teamID')
-  update(
+  async update(
     @Param('teamID') teamID: string,
     @Body() updateTeamDto: UpdateTeamDto,
   ) {
-    return this.teamsService.update(+teamID, updateTeamDto);
+    return await this.teamsService.update(+teamID, updateTeamDto);
   }
 
   @Delete(':teamID')
-  remove(@Param('teamID') teamID: string) {
-    return this.teamsService.remove(+teamID);
+  async remove(@Param('teamID') teamID: string): Promise<{
+    message: string;
+    deleted: boolean;
+  }> {
+    return await this.teamsService.remove(+teamID);
   }
 
   @Post(':teamID/members')
-  addMember(@Param('teamID') teamID: string) {
-    return this.teamsService.addMember(+teamID);
+  async addMember(@Param('teamID') teamID: string) {
+    return await this.teamsService.addMember(+teamID);
   }
 
   @Delete(':teamID/members/:userID')
-  removeMember(
+  async removeMember(
     @Param('teamID') teamID: string,
     @Param('userID') userID: string,
   ) {
-    return this.teamsService.removeMember(+teamID, +userID);
+    return await this.teamsService.removeMember(+teamID, +userID);
   }
 }
