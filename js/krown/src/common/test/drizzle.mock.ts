@@ -57,6 +57,21 @@ export const setMockSelect = (
   });
 };
 
+export const setMockSelectWithInnerJoinLimit = (
+  mockDrizzle: Partial<DrizzleDB>,
+  returnValue: any,
+) => {
+  (mockDrizzle.select as jest.Mock).mockReturnValueOnce({
+    from: jest.fn().mockReturnValue({
+      innerJoin: jest.fn().mockReturnValue({
+        where: jest.fn().mockReturnValue({
+          limit: jest.fn().mockResolvedValue(returnValue),
+        }),
+      }),
+    }),
+  });
+};
+
 export const setMockUpdate = (
   mockDrizzle: Partial<DrizzleDB>,
   returnValue: any,

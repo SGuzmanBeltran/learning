@@ -131,14 +131,22 @@ describe('TeamsService', () => {
 
   describe('findOne team', () => {
     it('should find a team', async () => {
-      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
+      DrizzleSpec.setMockSelectWithInnerJoinLimit(mockDrizzle, [
+        {
+          teams: { id: 1, name: 'Test Team' },
+          team_members: [{ teamId: 1, userId: 1, isLeader: true }],
+        },
+      ]);
 
       const team = await service.findOne(1);
-      expect(team).toEqual({ id: 1, name: 'Test Team' });
+      expect(team).toEqual({
+        team: { id: 1, name: 'Test Team' },
+        members: [{ teamId: 1, userId: 1, isLeader: true }],
+      });
     });
 
     it('should throw an error if the team is not found', async () => {
-      DrizzleSpec.setMockSelect(mockDrizzle, [null]);
+      DrizzleSpec.setMockSelectWithInnerJoinLimit(mockDrizzle, [null]);
 
       await expect(service.findOne(1)).rejects.toThrow(NotFoundException);
     });
@@ -146,7 +154,12 @@ describe('TeamsService', () => {
 
   describe('update team', () => {
     it('should update a team', async () => {
-      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Old Team' }]);
+      DrizzleSpec.setMockSelectWithInnerJoinLimit(mockDrizzle, [
+        {
+          teams: { id: 1, name: 'Old Team' },
+          team_members: [{ teamId: 1, userId: 1, isLeader: true }],
+        },
+      ]);
       DrizzleSpec.setMockUpdate(mockDrizzle, [{ id: 1, name: 'Updated Team' }]);
 
       const team = await service.update(1, { name: 'Updated Team' });
@@ -156,7 +169,12 @@ describe('TeamsService', () => {
     });
 
     it('should throw an error if the team update fails', async () => {
-      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Old Team' }]);
+      DrizzleSpec.setMockSelectWithInnerJoinLimit(mockDrizzle, [
+        {
+          teams: { id: 1, name: 'Old Team' },
+          team_members: [{ teamId: 1, userId: 1, isLeader: true }],
+        },
+      ]);
 
       DrizzleSpec.setMockUpdateFails(mockDrizzle);
 
@@ -168,10 +186,16 @@ describe('TeamsService', () => {
 
   describe('remove team', () => {
     it('should remove a team', async () => {
-      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
+      const teamLeader = { teamId: 1, userId: 1, isLeader: true };
+      DrizzleSpec.setMockSelectWithInnerJoinLimit(mockDrizzle, [
+        {
+          teams: { id: 1, name: 'Test Team' },
+          team_members: [teamLeader],
+        },
+      ]);
       DrizzleSpec.setMockDelete(mockDrizzle);
 
-      const result = await service.remove(1);
+      const result = await service.remove(1, teamLeader.userId);
 
       expect(result).toEqual({
         message: 'Team 1 deleted successfully',
@@ -182,10 +206,16 @@ describe('TeamsService', () => {
     });
 
     it('should throw an error if the team deletion fails', async () => {
-      DrizzleSpec.setMockSelect(mockDrizzle, [{ id: 1, name: 'Test Team' }]);
+      const teamLeader = { teamId: 1, userId: 1, isLeader: true };
+      DrizzleSpec.setMockSelectWithInnerJoinLimit(mockDrizzle, [
+        {
+          teams: { id: 1, name: 'Test Team' },
+          team_members: [teamLeader],
+        },
+      ]);
       DrizzleSpec.setMockDeleteFails(mockDrizzle);
 
-      await expect(service.remove(1)).rejects.toThrow(
+      await expect(service.remove(1, teamLeader.userId)).rejects.toThrow(
         InternalServerErrorException,
       );
 

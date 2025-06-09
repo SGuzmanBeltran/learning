@@ -25,6 +25,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  //todo: catch unique constraint error
   async register(registerDto: RegisterDto): Promise<{ message: string }> {
     const { email, password, passwordConfirmation, username, cellphone } =
       registerDto;

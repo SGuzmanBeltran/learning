@@ -52,16 +52,23 @@ export class TeamsController {
   }
 
   @Delete(':teamID')
-  async remove(@Param('teamID') teamID: string): Promise<{
+  async remove(
+    @Param('teamID') teamID: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<{
     message: string;
     deleted: boolean;
   }> {
-    return await this.teamsService.remove(+teamID);
+    const user = req.user!;
+    return await this.teamsService.remove(+teamID, user.userId);
   }
 
   @Post(':teamID/members')
-  async addMember(@Param('teamID') teamID: string) {
-    return await this.teamsService.addMember(+teamID);
+  async addMember(
+    @Param('teamID') teamID: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return await this.teamsService.addMember(+teamID, req.user!.userId);
   }
 
   @Delete(':teamID/members/:userID')
